@@ -3,6 +3,7 @@ package optimino;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.*;
 
 import jxl.read.biff.BiffException;
 
@@ -10,7 +11,7 @@ public class Main {
 
 	public static void main(String[] args)  throws SQLException, BiffException, IOException {
 		
-		Vicinanza vicinanza;
+		List<Vicinanza> ristoranti = new ArrayList<Vicinanza>();
 		Scanner input = new Scanner(System.in);
 		System.out.println("trova siti o celle (S/C)?");
 		String scelta = input.nextLine();
@@ -33,8 +34,14 @@ public class Main {
 		System.out.println("Inserisci Longitudine (decimale)");
 		String longitude = input.nextLine();
 		input.close();
-		vicinanza = Vicinanza.TrovaSito(latitude, longitude);
-		System.out.println("Il sito più vicino è " + vicinanza.site + " che si trova a " + vicinanza.distanza +" metri");   
+		ristoranti = Vicinanza.TrovaSito(latitude, longitude);
+		System.out.println("Trovati nell'arco di 10km:");
+		for (int i=0;i<ristoranti.size();i++) {
+			
+			System.out.println(String.valueOf(i+1) + ") " + ristoranti.get(i).getSite() + " che si trova a " + ristoranti.get(i).getDistanza() +" km");
+			
+		}
+		   
 	}
 
 }

@@ -4,13 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.*;
 
 public class Vicinanza {
-	
+
 	String site;
 	String distanza;
 
-	public static Vicinanza TrovaSito (String latitude, String longitude) {
+	public static List<Vicinanza> TrovaSito (String latitude, String longitude) {
 
 		Connection connDB = null;
 		Statement stmtDB = null;
@@ -18,9 +19,10 @@ public class Vicinanza {
 		String lat = null;
 		String lon = null;
 		String site_result = null;
-		double dist = 100000;
+		double dist = 10000;
 		double distanza;
-		Vicinanza vicinanza = new Vicinanza();
+		List<Vicinanza> ristoranti = new ArrayList<Vicinanza>();
+		
 
 		try{
 			Class.forName("org.sqlite.JDBC");
@@ -31,16 +33,17 @@ public class Vicinanza {
 			stmtDB = connDB.createStatement();
 			ResultSet resultset = stmtDB.executeQuery("SELECT * FROM SITES");
 			while (resultset.next()) {
-					site = resultset.getString("site");
-					lat = resultset.getString("latitude");
-					lon = resultset.getString("longitude");
-					distanza = Calcola_distanza.distanza(latitude.replaceAll(",", "."), longitude.replaceAll(",", "."), lat, lon);
-					if (distanza < dist)  {
-						
-						dist = distanza;
-						site_result = site;
-						
-					}
+				site = resultset.getString("site");
+				lat = resultset.getString("latitude");
+				lon = resultset.getString("longitude");
+				Vicinanza vicinanza = new Vicinanza();
+				distanza = Calcola_distanza.distanza(latitude.replaceAll(",", "."), longitude.replaceAll(",", "."), lat, lon);
+				if (distanza < dist)  {
+
+					vicinanza.site = site;
+					vicinanza.distanza = String.format("%.2f",distanza/1000);
+					ristoranti.add(vicinanza);			
+				}
 
 			}
 
@@ -50,17 +53,31 @@ public class Vicinanza {
 			System.err.println (e.getClass().getName() + ": " + e.getMessage() );
 			System.exit(0);                                 
 		}  
-		vicinanza.site = site_result;
-		vicinanza.distanza = String.valueOf(dist);
-		return vicinanza;
-		
+		return ristoranti;
+
 	}
-	
+
+	public String getSite() {
+		return site;
+	}
+
+	public void setSite(String site) {
+		this.site = site;
+	}
+
+	public String getDistanza() {
+		return distanza;
+	}
+
+	public void setDistanza(String distanza) {
+		this.distanza = distanza;
+	}
+
 	public Vicinanza (String site, String distanza) {
-		
+
 		this.site = site;
 		this.distanza = distanza;
-		
+
 	}
 
 	public Vicinanza() {
